@@ -1,3 +1,3 @@
 # "nv-webblog68" 
-arkhom jittorn
-csit
+Arkhom Jittorn
+CSIT
