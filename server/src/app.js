@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express')
 const cors = require('cors')
 const { sequelize } = require('./models') // เรียกใช้ sequelize object ที่เราสร้างไว้
@@ -24,3 +25,23 @@ sequelize.sync({ force: false }).then(() => {
         })
     })
 
+=======
+let express = require('express')
+let bodyParser = require('body-parser')
+ 
+const app = express()
+ 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+ 
+// เรียกใช้ routes.js โดยส่ง app เข้าไป
+require('./routes')(app)
+ 
+// ไม่ต้องมี route อื่นแล้วตาม Lab5
+ 
+let port = 8081
+ 
+app.listen(port, function () {
+    console.log('server running on ' + port)
+})
+>>>>>>> 9ea1d392c71edf2b79be8b4ed72e78029637f61f

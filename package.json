@@ -1,6 +1,21 @@
 {
+<<<<<<< HEAD
   "dependencies": {
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
+=======
+  "name": "nv-webblog-server",
+  "version": "1.0.0",
+  "description": "nodejs vuejs webblog server (back end)",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arkhom Jittorn",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "express": "^5.2.1"
+>>>>>>> 9ea1d392c71edf2b79be8b4ed72e78029637f61f
   }
 }
