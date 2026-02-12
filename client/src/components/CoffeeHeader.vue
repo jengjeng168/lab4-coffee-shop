@@ -72,7 +72,7 @@ export default {
 
 <style scoped>
 .coffee-navbar {
-  background-color: #6f4e37;
+  background-color: #036800;
   width: 100%;
   padding: 10px 0;
 }
@@ -96,11 +96,11 @@ export default {
 }
 
 .coffee-navbar .nav li a:hover {
-  background-color: #8b5a2b;
+  background-color: #7bdb90;
 }
 
 .coffee-navbar .nav li a.router-link-active {
-  background-color: #a0522d;
+  background-color: #036800;
 }
 
 .clearfix {
