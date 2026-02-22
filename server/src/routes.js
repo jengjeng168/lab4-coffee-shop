@@ -7,15 +7,15 @@ const isAuthenController = require('./controllers/isAuthenController')
 const BlogController = require('./controllers/BlogController')
 
 // ===============================
-// # เพิ่ม (Import Upload Controller + Middleware)
+// Upload (Blog)
 // ===============================
-const UploadController = require('./controllers/UploadController') // # เพิ่ม
-const fileUploadMiddleware = require('./middleware/fileUpload') // # เพิ่ม
+const UploadController = require('./controllers/UploadController')
+const fileUploadMiddleware = require('./middleware/fileUpload')
 
 // ===============================
-// # เพิ่ม Coffee Upload Middleware
+// Coffee Upload (รูปกาแฟอย่างเดียว)
 // ===============================
-const coffeeUpload = require('./middleware/coffeeUpload') // # เพิ่ม Coffee Upload
+const coffeeUpload = require('./middleware/coffeeUpload')
 
 module.exports = (app) => {
 
@@ -26,7 +26,7 @@ module.exports = (app) => {
   app.post('/register', UserAuthenController.register)
 
   // ===============================
-  // Users Routes (ต้อง login ก่อน)
+  // Users Routes
   // ===============================
   app.get('/users', isAuthenController, UserController.index)
   app.get('/user/:userId', isAuthenController, UserController.show)
@@ -35,25 +35,14 @@ module.exports = (app) => {
   app.delete('/user/:userId', isAuthenController, UserController.remove)
 
   // ===============================
-  // Coffee Routes
+  // Coffee Routes (ข้อมูลอย่างเดียว)
   // ===============================
   app.get('/coffees', CoffeeController.index)
   app.get('/coffee/:coffeeId', CoffeeController.show)
 
-  app.post('/coffee',
-    isAuthenController,
-    CoffeeController.create
-  )
-
-  app.put('/coffee/:coffeeId',
-    isAuthenController,
-    CoffeeController.update
-  )
-
-  app.delete('/coffee/:coffeeId',
-    isAuthenController,
-    CoffeeController.delete
-  )
+  app.post('/coffee', isAuthenController, CoffeeController.create)
+  app.put('/coffee/:coffeeId', isAuthenController, CoffeeController.update)
+  app.delete('/coffee/:coffeeId', isAuthenController, CoffeeController.delete)
 
   // ===============================
   // Blog Routes
@@ -65,28 +54,20 @@ module.exports = (app) => {
   app.get('/blogs', BlogController.index)
 
   // ===============================
-  // # เพิ่ม Upload Route (Blog)
+  // Upload Route (Blog)
   // ===============================
-  app.post('/upload',
-    fileUploadMiddleware,
-    UploadController.upload
-  )
+  app.post('/upload', fileUploadMiddleware, UploadController.upload)
 
   // ===============================
-  // # เพิ่ม Coffee Upload Route
+  // Coffee Upload Route (อัปโหลดรูปอย่างเดียว)
   // ===============================
-  app.post('/coffee-upload',
-    coffeeUpload,
-    (req, res) => {
-      if (!req.file) {
-        return res.status(400).send({
-          error: 'No file uploaded'
-        })
-      }
+  app.post('/coffee-upload', coffeeUpload, (req, res) => {
+    console.log('UPLOAD FILE =>', req.file) // 👈 log ไว้ดูใน Terminal
 
-      res.json({
-        filename: req.file.filename
-      })
+    if (!req.file) {
+      return res.status(400).send({ error: 'No file uploaded' })
     }
-  )
+
+    res.json({ filename: req.file.filename })
+  })
 }

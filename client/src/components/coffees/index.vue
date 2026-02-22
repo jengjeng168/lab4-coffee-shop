@@ -13,14 +13,16 @@
       >
         <div>id: {{ coffee.id }}</div>
 
-        <!-- ✅ แสดงรูปวงกลมหน้าชื่อ -->
-        <div>
+        <!-- ✅ รูปกาแฟวงกลมหน้าชื่อ -->
+        <div class="coffee-row">
           <img
-            v-if="coffee.image"
-            :src="`http://localhost:8081/assets/uploads/${coffee.image}`"
+            :src="coffee.image
+              ? `http://localhost:8081/uploads/${coffee.image}`
+              : 'http://localhost:8081/uploads/default-coffee.png'"
             class="coffee-thumb"
+            @error="onImgError"
           />
-          ชื่อเมนู: {{ coffee.name }}
+          <span>ชื่อเมนู: {{ coffee.name }}</span>
         </div>
 
         <div>ราคา: {{ coffee.price }}</div>
@@ -33,7 +35,7 @@
           </button>
 
           <template v-if="isLoggedIn">
-            <button @click="navigateTo('/coffee/edit/' + coffee.id)">
+            <button @click="navigateateToEdit(coffee.id)">
               แก้ไข
             </button>
 
@@ -80,6 +82,10 @@ export default {
       this.$router.push(route)
     },
 
+    navigateateToEdit (id) {
+      this.$router.push('/coffee/edit/' + id)
+    },
+
     async deleteCoffee (coffeeId) {
       const result = confirm('Want to delete?')
       if (result) {
@@ -94,6 +100,10 @@ export default {
 
     async refreshData () {
       this.coffees = (await CoffeesService.index()).data
+    },
+
+    onImgError (e) {
+      e.target.src = 'http://localhost:8081/uploads/default-coffee.png'
     }
   }
 }
@@ -106,11 +116,16 @@ export default {
   object-fit: cover;
   border-radius: 50%;
   margin-right: 10px;
-  vertical-align: middle;
 }
 
 .coffee-item {
   display: flex;
   flex-direction: column;
+}
+
+.coffee-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>

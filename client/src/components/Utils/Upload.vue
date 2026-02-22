@@ -1,13 +1,23 @@
 <template>
   <div class="upload-box">
     <div class="mb-3">
-        <label class="form-label">Upload Thumbnail:</label>
-        <input type="file" class="form-control" @change="onFileChange" accept="image/*" />
+      <label class="form-label">Upload Thumbnail:</label>
+      <input
+        type="file"
+        class="form-control"
+        @change="onFileChange"
+        accept="image/*"
+      />
     </div>
-    
+
     <div v-if="previewImage" class="preview-container">
-       <img :src="previewImage" class="img-thumbnail" />
-       <p class="mt-2 text-success" v-if="uploadStatus">{{ uploadStatus }}</p>
+      <img :src="previewImage" class="img-thumbnail" />
+      <p class="mt-2 text-success" v-if="uploadStatus === 'success'">
+        Uploaded Successfully!
+      </p>
+      <p class="mt-2 text-danger" v-if="uploadStatus === 'error'">
+        Upload Failed
+      </p>
     </div>
   </div>
 </template>
@@ -27,25 +37,23 @@ export default {
       const file = e.target.files[0]
       if (!file) return
 
-      // 1. สร้าง Preview ทันที (UX improvement)
-      this.previewImage = URL.createObjectURL(file) 
-      this.uploadStatus = 'Uploading...'
+      // preview
+      this.previewImage = URL.createObjectURL(file)
+      this.uploadStatus = 'loading'
 
-      // 2. เตรียมข้อมูลส่ง Server
       const formData = new FormData()
-      formData.append('image', file)
+
+      // 🔴 สำคัญ: ต้องใช้ชื่อ field = 'file' ให้ตรงกับ multer
+      formData.append('file', file)
 
       try {
-        // 3. ยิง Request
-        const response = await UploadService.upload(formData)
-        
-        this.uploadStatus = 'Uploaded Successfully!'
-        // 4. ส่งชื่อไฟล์กลับไปให้แม่ (Parent Component)
-        // ใช้ $emit เพื่อส่ง Event แจ้ง Component แม่ [7]
+        const response = await UploadService.uploadCoffee(formData)
+
+        this.uploadStatus = 'success'
         this.$emit('uploaded', response.data.filename)
       } catch (err) {
-        console.log(err)
-        this.uploadStatus = 'Upload Failed'
+        console.error(err)
+        this.uploadStatus = 'error'
       }
     }
   }

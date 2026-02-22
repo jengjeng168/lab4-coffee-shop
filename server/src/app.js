@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const path = require('path')   // ✅ เพิ่ม
+const path = require('path')
 
 const app = express()
 
@@ -10,7 +10,15 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // ===============================
-// เปิด Static Folder (แก้ให้ถูก path)
+// เปิด Static Folder สำหรับรูปกาแฟ
+// ===============================
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, '../public/uploads'))
+)
+
+// ===============================
+// เปิด static assets อื่น ๆ
 // ===============================
 app.use(
   '/assets',
@@ -18,7 +26,6 @@ app.use(
 )
 
 require('./routes')(app)
-
 require('./userPassport')
 
 const config = require('./config/config')

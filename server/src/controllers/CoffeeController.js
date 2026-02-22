@@ -1,4 +1,6 @@
 const { Coffee } = require('../models')
+const fs = require('fs')
+const path = require('path')
 
 module.exports = {
 
@@ -32,7 +34,7 @@ module.exports = {
   },
 
   // ===============================
-  // เพิ่มเมนูกาแฟใหม่ (รองรับ image)
+  // เพิ่มเมนูกาแฟใหม่ (รองรับอัปโหลดรูป)
   // ===============================
   async create (req, res) {
     try {
@@ -41,9 +43,15 @@ module.exports = {
         price,
         type,
         status,
-        description,
-        image   // ✅ เพิ่มรับ image
+        description
       } = req.body
+
+      let image = null
+
+      // 👉 รับไฟล์จาก multer
+      if (req.file) {
+        image = `/uploads/${req.file.filename}`
+      }
 
       const coffee = await Coffee.create({
         name,
@@ -51,17 +59,23 @@ module.exports = {
         type,
         status,
         description,
-        image: image || null  // ✅ บันทึก image ถ้ามี
+        image
       })
 
-      res.send(coffee)
+      res.send({
+        message: 'Uploaded Successfully!',
+        coffee
+      })
     } catch (err) {
-      res.status(400).send(err)
+      console.error(err)
+      res.status(400).send({
+        error: 'Upload Failed'
+      })
     }
   },
 
   // ===============================
-  // แก้ไขข้อมูลกาแฟ (รองรับ image)
+  // แก้ไขข้อมูลกาแฟ (ถ้ามีรูปใหม่ จะเปลี่ยนรูป)
   // ===============================
   async update (req, res) {
     try {
@@ -76,9 +90,20 @@ module.exports = {
         price,
         type,
         status,
-        description,
-        image   // ✅ เพิ่มรับ image
+        description
       } = req.body
+
+      // 👉 ถ้ามีการอัปโหลดรูปใหม่
+      if (req.file) {
+        // ลบรูปเก่า
+        if (coffee.image) {
+          const oldPath = path.join(__dirname, '../../public', coffee.image)
+          if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath)
+          }
+        }
+        coffee.image = `/uploads/${req.file.filename}`
+      }
 
       await coffee.update({
         name,
@@ -86,17 +111,20 @@ module.exports = {
         type,
         status,
         description,
-        image: image || coffee.image  // ✅ ถ้าไม่อัปโหลดใหม่ ใช้รูปเดิม
+        image: coffee.image
       })
 
       res.send({ message: 'Coffee updated successfully' })
     } catch (err) {
-      res.status(400).send(err)
+      console.error(err)
+      res.status(400).send({
+        error: 'Update Failed'
+      })
     }
   },
 
   // ===============================
-  // ลบเมนูกาแฟ
+  // ลบเมนูกาแฟ (ลบรูปด้วย)
   // ===============================
   async delete (req, res) {
     try {
@@ -106,11 +134,22 @@ module.exports = {
         return res.status(404).send({ message: 'Coffee not found' })
       }
 
+      // 👉 ลบไฟล์รูปออกจากโฟลเดอร์
+      if (coffee.image) {
+        const imgPath = path.join(__dirname, '../../public', coffee.image)
+        if (fs.existsSync(imgPath)) {
+          fs.unlinkSync(imgPath)
+        }
+      }
+
       await coffee.destroy()
 
       res.send({ message: 'Coffee deleted successfully' })
     } catch (err) {
-      res.status(400).send(err)
+      console.error(err)
+      res.status(400).send({
+        error: 'Delete Failed'
+      })
     }
   }
 

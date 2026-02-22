@@ -1,7 +1,11 @@
-import Api from './Api'
+import Api from '@/services/Api'
 
 export default {
-  upload (formData) {
-    return Api().post('upload', formData)
+  uploadCoffee (formData) {
+    return Api().post('/coffee-upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 }
